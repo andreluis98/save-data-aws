@@ -10,6 +10,9 @@ import { PgProductRepository } from './adapters/pg-product-repository';
 import { CreateProductPriceUseCase } from './use-cases/create-product-price-use-case';
 import { ProductPriceRepository } from './bondaries/product-price-repository';
 import { PgProductPriceRepository } from './adapters/pg-product-price-repository';
+import { GeolocationGatewayRegistry } from './registries/geolocation-gateway-registry';
+import { GeoLocationGateway } from './bondaries/geolocation-gateway';
+import { GoogleGeolocationGateway } from './adapters/google-geolocatio-gateway';
 
 export async function lambdaHandler(event: SQSEvent): Promise<void> {
     const recordsSchema = z.array(
@@ -45,6 +48,8 @@ export async function lambdaHandler(event: SQSEvent): Promise<void> {
             };
         }),
         );
+        const geolocationGateway: GeoLocationGateway = new GoogleGeolocationGateway();
+        GeolocationGatewayRegistry.getInstance().setGeolocationGateway(geolocationGateway);
         const dbConnection: DbConnection = new PgConnection(
             'postgresql://midasdb_qh22_user:RxGDWJVZ8A0UfDunrAjGzVdkaInlwnaa@dpg-cq7h7hmehbks738vhhq0-a.oregon-postgres.render.com/midasdb_qh22?ssl=true'
         );

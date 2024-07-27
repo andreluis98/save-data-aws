@@ -2,6 +2,8 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult, SQSEvent } from 'aws-lambd
 import { lambdaHandler } from '../../app';
 import { expect, describe, it } from '@jest/globals';
 
+import { GoogleGeolocationGateway } from "../../adapters/google-geolocatio-gateway"
+
 describe('Unit test for app handler', function () {
     it('verifies successful response', async () => {
         const event: SQSEvent = {
@@ -26,5 +28,12 @@ describe('Unit test for app handler', function () {
           };
        
         await expect(lambdaHandler(event)).resolves.toBeUndefined();
+    });
+
+    it.skip("GoogleGeolocationGateway", async () => {
+      const sut = new GoogleGeolocationGateway()
+      const response = await sut.getGeoLocationFromAddress("AV Nossa Senhora do Carmo, 1202, Carmo, 3106200 - Belo Horizonte, MG");
+      expect(response.latitude).toBe(-19.9492109);
+      expect(response.longitude).toBe(-43.9364895);
     });
 });
