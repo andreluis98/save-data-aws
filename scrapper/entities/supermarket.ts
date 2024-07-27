@@ -1,3 +1,5 @@
+import { GeolocationGatewayRegistry } from "../registries/geolocation-gateway-registry";
+
 export class Supermarket{
     private cnpj: string;
     private name: string;
@@ -41,9 +43,8 @@ export class Supermarket{
         this.longitude = longitude;
     }
 
-    public static create(cnpj: string,name: string,address: string){
-        const latitude = 0;
-        const longitude = 0;
+    public static async create(cnpj: string,name: string,address: string){
+        const {latitude, longitude} = await GeolocationGatewayRegistry.getInstance().getGeolocationGateway().getGeoLocationFromAddress(address);
         return new Supermarket(cnpj, name, address, latitude, longitude);
     }
 }

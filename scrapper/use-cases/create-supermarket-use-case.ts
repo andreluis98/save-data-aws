@@ -15,7 +15,7 @@ export class CreateSupermarketUseCase{
         if(supermarketExists){
             return;
         }
-        const supermarket = Supermarket.create(cnpj, name, address);
+        const supermarket = await Supermarket.create(cnpj, name, address);
         await this.supermarketRepository.save(supermarket);
         return;
     }

@@ -4,6 +4,12 @@ import { CreateSupermarketUseCase } from './use-cases/create-supermarket-use-cas
 import { SupermarketRepository } from './bondaries/supermarket-repository';
 import { PgSupermarketRepository } from './adapters/pg-supermarkets-repository';
 import { DbConnection, PgConnection } from './adapters/pg-connection';
+import { CreateProductUseCase } from './use-cases/create-product-use-case';
+import { ProductRepository } from './bondaries/product-repository';
+import { PgProductRepository } from './adapters/pg-product-repository';
+import { CreateProductPriceUseCase } from './use-cases/create-product-price-use-case';
+import { ProductPriceRepository } from './bondaries/product-price-repository';
+import { PgProductPriceRepository } from './adapters/pg-product-price-repository';
 
 export async function lambdaHandler(event: SQSEvent): Promise<void> {
     const recordsSchema = z.array(
@@ -39,14 +45,27 @@ export async function lambdaHandler(event: SQSEvent): Promise<void> {
             };
         }),
         );
-        const dbConnection: DbConnection = new PgConnection("postgres://admin:admin@localhost:5433/my_db");
+        const dbConnection: DbConnection = new PgConnection(
+            'postgresql://midasdb_qh22_user:RxGDWJVZ8A0UfDunrAjGzVdkaInlwnaa@dpg-cq7h7hmehbks738vhhq0-a.oregon-postgres.render.com/midasdb_qh22?ssl=true'
+        );
         const supermarketRepository: SupermarketRepository = new PgSupermarketRepository(dbConnection);
+        const productRepository: ProductRepository = new PgProductRepository(dbConnection);
+        const ProductPriceRepository: ProductPriceRepository = new PgProductPriceRepository(dbConnection);
         const createSupermarketUseCase = new CreateSupermarketUseCase(supermarketRepository);
+        const createProductUseCase = new CreateProductUseCase(productRepository);
+        const crateProductPriceUseCase = new CreateProductPriceUseCase(ProductPriceRepository);
 
         for (let record of records) {
             await createSupermarketUseCase.execute({cnpj: record.cnpj, name: record.supermarketName, address: record.address});
             for (let item of record.items) {
-
+                await createProductUseCase.execute({ code: item.code, name: item.name });
+                await crateProductPriceUseCase.execute({ 
+                    nfeId: record.nfeId,
+                    date: record.date,
+                    price: item.price,
+                    productId: item.code,
+                    supermarketId: record.cnpj,
+                 });
             }
 
         }
