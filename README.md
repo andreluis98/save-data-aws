@@ -100,7 +100,7 @@ Caso de uso para criar um novo supermercado.
 Função principal Lambda que processa eventos SQS, valida dados usando Zod, e executa os casos de uso apropriados.
 
 ## Esquema e relacionamentos do Banco de dados
-![relacionamento-banco-de-dados](images/relacionamento-banco-de-dados.pgerd)
+![relacionamento-banco-de-dados](images/relacionamento-banco-de-dados.png)
 
 
 ### Testes
